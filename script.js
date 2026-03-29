@@ -402,7 +402,57 @@ const MTH101_Q = [
   {q:"Which identity is TRUE?",o:["cosecθ=1/cosθ","cosθ/sinθ=cotθ","cosθ=1/sinθ","secθ=1/sinθ"],a:1,e:"cotθ=cosθ/sinθ is valid."},
   {q:"cos²θ-sin²θ is equivalent to:",o:["2sin²θ-1","1+2sin²θ","2sin²θ+1","1-2sin²θ"],a:3,e:"cos²θ=(1-sin²θ). So cos²θ-sin²θ=1-2sin²θ."},
   {q:"2π/3 radians in degrees:",o:["44/21","2.0944°","120°","180°"],a:2,e:"(2π/3)×(180/π)=120°."},
-  {q:"Which is a trigonometric identity?",o:["cos2θ+sin2θ=1","1+tan²θ=cot²θ","1+cot²θ=csc²θ","1+sec²θ=csc²θ"],a:2,e:"1+cot²θ=csc²θ is a valid Pythagorean identity."}
+  {q:"Which is a trigonometric identity?",o:["cos2θ+sin2θ=1","1+tan²θ=cot²θ","1+cot²θ=csc²θ","1+sec²θ=csc²θ"],a:2,e:"1+cot²θ=csc²θ is a valid Pythagorean identity."},
+
+  // ── NEW QUESTIONS FROM MTH 101 ADVANCED EXAM PDF ─────────────
+
+  // SECTION A: SET THEORY
+  {q:"Let A={1,2,3,4,5}, B={3,4,5,6,7}, C={5,6,7,8}. Find (A∪B)∩C.",o:["{5,6,7}","{3,4,5}","{1,2,3}","{6,7,8}"],a:0,e:"Step 1 — Find A∪B (all elements in A or B): A∪B = {1,2,3,4,5,6,7}.\nStep 2 — Intersect with C (common elements): {1,2,3,4,5,6,7} ∩ {5,6,7,8} = {5,6,7}.\nAnswer: {5,6,7}."},
+  {q:"U={1,2,3,4,5,6,7,8,9}, A={2,4,6,8}, B={1,2,3,4}. Find A′∩B.",o:["{1,3}","{2,4}","{5,7,9}","{1,2,3,4}"],a:0,e:"Step 1 — A′ = U − A = {1,3,5,7,9} (elements of U not in A).\nStep 2 — A′ ∩ B = common elements of {1,3,5,7,9} and {1,2,3,4} = {1,3}.\nAnswer: {1,3}."},
+  {q:"A={1,3,5,7}, B={3,4,5}, C={5,6,7}. Find A∩(B∪C).",o:["{3,5,7}","{3,4,5}","{5,7}","{1,3}"],a:0,e:"Step 1 — B∪C = {3,4,5,6,7} (all elements in B or C).\nStep 2 — A ∩ (B∪C) = elements in both A and {3,4,5,6,7} = {3,5,7}.\nAnswer: {3,5,7}."},
+  {q:"U={1,2,3,4,5,6,7,8}, A={2,3,4}, B={4,5,6}. Find (A∪B)′.",o:["{1,7,8}","{1,2,8}","{4,5,6}","{2,3,4}"],a:0,e:"Step 1 — A∪B = {2,3,4,5,6}.\nStep 2 — (A∪B)′ = U − (A∪B) = {1,2,3,4,5,6,7,8} − {2,3,4,5,6} = {1,7,8}.\nAnswer: {1,7,8}."},
+
+  // SECTION B: SEQUENCES AND SERIES
+  {q:"Find the 20th term of the AP: 7, 11, 15, 19, …",o:["79","83","87","91"],a:1,e:"Using Tₙ = a+(n−1)d: a=7, d=11−7=4, n=20.\nT₂₀ = 7 + (20−1)×4 = 7 + 19×4 = 7 + 76 = 83.\nAnswer: 83."},
+  {q:"Find the sum of the first 25 terms of the AP: 4, 7, 10, 13, …",o:["900","1000","1100","1200"],a:1,e:"Using Sₙ = n/2[2a+(n−1)d]: a=4, d=3, n=25.\nS₂₅ = 25/2 × [2(4)+(25−1)(3)] = 25/2 × [8+72] = 25/2 × 80 = 25 × 40 = 1000.\nAnswer: 1000."},
+  {q:"The 5th term of an AP is 18 and the 10th term is 33. Find the common difference d.",o:["2","3","4","5"],a:1,e:"T₅ = a+4d = 18 … (i)\nT₁₀ = a+9d = 33 … (ii)\nSubtract (i) from (ii): 5d = 15 → d = 3.\nAnswer: d = 3."},
+  {q:"The 5th term of an AP is 18 and the 10th term is 33. Find the first term a.",o:["4","5","6","7"],a:2,e:"From the previous solution, d=3. Substitute into T₅: a+4(3)=18 → a+12=18 → a=6.\nAnswer: a = 6."},
+  {q:"Find the sum of integers from 1 to 50.",o:["1250","1275","1300","1325"],a:1,e:"Using S = n(n+1)/2 where n=50:\nS = 50×51/2 = 2550/2 = 1275.\nAnswer: 1275."},
+  {q:"Find the sum 1+2+3+…+20.",o:["190","200","210","220"],a:2,e:"S = n(n+1)/2 = 20×21/2 = 420/2 = 210.\nAnswer: 210."},
+  {q:"Find the sum of the first 15 odd numbers.",o:["196","210","215","225"],a:3,e:"Sum of first n odd numbers = n².\nFor n=15: Sum = 15² = 225.\nAnswer: 225. (Odd numbers: 1,3,5,...,29. S=15²=225)"},
+  {q:"Find the sum: 2+4+6+…+40.",o:["380","400","420","440"],a:2,e:"This is an AP: a=2, last term l=40, d=2.\nn = (l−a)/d + 1 = (40−2)/2 + 1 = 20 terms.\nS = n/2(a+l) = 20/2×(2+40) = 10×42 = 420.\nAnswer: 420."},
+
+  // SECTION C: PARTIAL FRACTIONS
+  {q:"Resolve 5/[(x−1)(x−3)] into partial fractions.",o:["5/2·[1/(x−3)−1/(x−1)]","-5/2(x−1)+5/2(x−3)","5/(x−1)−5/(x−3)","1/(x−1)+1/(x−3)"],a:1,e:"Let 5/[(x−1)(x−3)] = A/(x−1) + B/(x−3).\nMultiply: 5 = A(x−3) + B(x−1).\nSub x=3: 5=2B → B=5/2.\nSub x=1: 5=−2A → A=−5/2.\nResult: −5/[2(x−1)] + 5/[2(x−3)]."},
+  {q:"Resolve 3/[(x+1)(x+2)] into partial fractions.",o:["3/(x+1)−3/(x+2)","3/(x+1)+3/(x+2)","−3/(x+1)+3/(x+2)","1/(x+1)+1/(x+2)"],a:0,e:"Let 3/[(x+1)(x+2)] = A/(x+1) + B/(x+2).\nMultiply: 3 = A(x+2)+B(x+1).\nSub x=−2: 3=−B → B=−3.\nSub x=−1: 3=A → A=3.\nResult: 3/(x+1) − 3/(x+2)."},
+  {q:"Resolve 6/[(x−2)(x+1)] into partial fractions.",o:["2/(x−2)+2/(x+1)","2/(x−2)−2/(x+1)","3/(x−2)−3/(x+1)","6/(x−2)−6/(x+1)"],a:1,e:"Let 6/[(x−2)(x+1)] = A/(x−2)+B/(x+1).\nMultiply: 6=A(x+1)+B(x−2).\nSub x=2: 6=3A → A=2.\nSub x=−1: 6=−3B → B=−2.\nResult: 2/(x−2) − 2/(x+1)."},
+
+  // SECTION D: BINOMIAL THEOREM
+  {q:"Expand (x+3)⁴. What is the coefficient of x³?",o:["9","12","27","36"],a:1,e:"Using (a+b)⁴ = a⁴+4a³b+6a²b²+4ab³+b⁴, with a=x and b=3:\nTerm with x³: 4a³b = 4x³(3) = 12x³.\nCoefficient of x³ = 12.\nFull expansion: x⁴+12x³+54x²+108x+81."},
+  {q:"Expand (x+3)⁴. What is the constant term?",o:["27","54","81","108"],a:2,e:"In (x+3)⁴, the constant term (x⁰ term) = 3⁴ = 81.\nAlternatively: C(4,4)×x⁰×3⁴ = 1×1×81 = 81."},
+  {q:"Expand (2x−1)³. What is the coefficient of x²?",o:["−12","−6","6","12"],a:0,e:"(2x−1)³ = (2x)³ − 3(2x)²(1) + 3(2x)(1)² − 1³\n= 8x³ − 12x² + 6x − 1.\nCoefficient of x² = −12."},
+  {q:"What is the full expansion of (2x−1)³?",o:["8x³+12x²+6x+1","8x³−12x²+6x−1","8x³−6x²+12x−1","8x³+6x²−12x+1"],a:1,e:"(a−b)³ = a³−3a²b+3ab²−b³, with a=2x, b=1:\n(2x)³=8x³; 3(2x)²(1)=12x²; 3(2x)(1)=6x; 1³=1.\nResult: 8x³−12x²+6x−1."},
+  {q:"Find the coefficient of x² in (x+2)⁴.",o:["16","24","32","48"],a:1,e:"General term: T(r+1) = C(4,r)×x^(4−r)×2^r.\nFor x²: 4−r=2 → r=2.\nT₃ = C(4,2)×x²×2² = 6×4×x² = 24x².\nCoefficient = 24."},
+  {q:"Find the constant term in (2x+1)³.",o:["0","1","2","3"],a:1,e:"The constant term in (2x+1)³ is when x has power 0.\nT(r+1) = C(3,r)(2x)^(3−r)(1)^r. Constant when 3−r=0 → r=3.\nT₄ = C(3,3)(2x)⁰(1)³ = 1×1×1 = 1.\nAnswer: 1."},
+
+  // SECTION E: QUADRATIC EQUATIONS
+  {q:"Solve 2x²−7x+3=0.",o:["x=1/2 or x=3","x=1 or x=3","x=−1/2 or x=3","x=1/2 or x=−3"],a:0,e:"Factorize: 2x²−7x+3 = (2x−1)(x−3).\nSetting each factor to zero:\n2x−1=0 → x=1/2\nx−3=0 → x=3.\nAnswer: x=1/2 or x=3."},
+  {q:"Solve 3x²+5x−2=0 using the quadratic formula.",o:["x=1/3 or x=−2","x=2/3 or x=−1","x=1 or x=−2/3","x=−1/3 or x=2"],a:0,e:"a=3, b=5, c=−2. Discriminant: b²−4ac = 25+24 = 49.\nx = (−5±√49)/(2×3) = (−5±7)/6.\nx₁=(−5+7)/6=2/6=1/3; x₂=(−5−7)/6=−12/6=−2.\nAnswer: x=1/3 or x=−2."},
+  {q:"Solve x²+6x+9=0.",o:["x=3","x=−3","x=±3","x=6"],a:1,e:"x²+6x+9 is a perfect square: (x+3)²=0.\nTherefore x+3=0 → x=−3 (repeated root).\nAnswer: x=−3."},
+  {q:"Solve 4x²−12x+9=0.",o:["x=3/4","x=3/2","x=2/3","x=4/3"],a:1,e:"4x²−12x+9 = (2x−3)²=0.\nSo 2x−3=0 → x=3/2 (repeated root).\nAnswer: x=3/2."},
+
+  // SECTION F: COMPLEX NUMBERS
+  {q:"Simplify (3+4i)+(5−2i).",o:["8−2i","8+2i","2+6i","8+6i"],a:1,e:"Add real parts: 3+5=8. Add imaginary parts: 4i+(−2i)=2i.\nResult: 8+2i."},
+  {q:"Multiply (4+3i)(2−i).",o:["8+2i","11+2i","11−2i","8−2i"],a:1,e:"(4+3i)(2−i) = 8−4i+6i−3i².\nSince i²=−1: 8−4i+6i+3 = (8+3)+(−4+6)i = 11+2i.\nAnswer: 11+2i."},
+  {q:"Find the modulus of z=3+4i.",o:["3","4","5","7"],a:2,e:"|z| = √(a²+b²) = √(3²+4²) = √(9+16) = √25 = 5.\nAnswer: |z|=5."},
+  {q:"Simplify (1+i)².",o:["1+2i","2i","2+2i","−2i"],a:1,e:"(1+i)² = 1²+2(1)(i)+i² = 1+2i+(−1) = 0+2i = 2i.\nAnswer: 2i."},
+
+  // SECTION G: TRIGONOMETRY
+  {q:"If sinθ=5/13, find cosθ.",o:["5/13","12/13","8/13","13/12"],a:1,e:"Using sin²θ+cos²θ=1:\ncos²θ = 1−sin²θ = 1−(5/13)² = 1−25/169 = 144/169.\ncosθ = √(144/169) = 12/13.\nAnswer: cosθ=12/13."},
+  {q:"If tanθ=3/4, find sinθ.",o:["3/5","4/5","3/4","4/3"],a:0,e:"tanθ=opposite/adjacent=3/4. Using Pythagoras:\nhypotenuse=√(3²+4²)=√25=5.\nsinθ=opposite/hypotenuse=3/5.\nAnswer: sinθ=3/5."},
+  {q:"If tanθ=3/4, find cosθ.",o:["3/5","4/5","3/4","5/4"],a:1,e:"hypotenuse=√(9+16)=5 (from Pythagorean triple 3-4-5).\ncosθ=adjacent/hypotenuse=4/5.\nAnswer: cosθ=4/5."},
+  {q:"Verify: (1−cos²θ)/sin²θ=1. Which identity is used?",o:["tanθ=sinθ/cosθ","sin²θ+cos²θ=1","cos2θ=1−2sin²θ","sin2θ=2sinθcosθ"],a:1,e:"From sin²θ+cos²θ=1: 1−cos²θ=sin²θ.\nSo (1−cos²θ)/sin²θ = sin²θ/sin²θ = 1 ✓.\nThe fundamental Pythagorean identity is used."},
+  {q:"If sinθ=8/17, find cosθ.",o:["15/17","8/15","17/15","15/8"],a:0,e:"sin²θ+cos²θ=1 → cos²θ=1−(8/17)²=1−64/289=225/289.\ncosθ=√(225/289)=15/17.\nThis is the Pythagorean triple 8-15-17.\nAnswer: cosθ=15/17."}
 ];
 
 // ── FULL QUESTION BANK ───────────────────────────────────────
@@ -419,6 +469,14 @@ let currentExam = {
   startTime:null, duration:60, timerInterval:null, submitted:false
 };
 let pendingExamSetup = { courseId:null, questionCount:10 };
+
+// ── APK MODAL FUNCTIONS ──────────────────────────────────────
+function openAPKModal() {
+  document.getElementById('apk-modal').style.display = 'flex';
+}
+function closeAPKModal() {
+  document.getElementById('apk-modal').style.display = 'none';
+}
 
 // ── MODAL FUNCTIONS ──────────────────────────────────────────
 function openExamModal(courseId) {
