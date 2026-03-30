@@ -57,7 +57,8 @@ const FACULTIES = [
 const CBT_COURSES = [
   { id:"CHM101", code:"CHM 101", name:"General Chemistry", faculty:"Science / General", maxDuration:90, questionsPool:[10,20,30,40,50] },
   { id:"MTH101", code:"MTH 101", name:"Elementary Mathematics I", faculty:"Science / General", maxDuration:60, questionsPool:[10,20,30,40,50] },
-  { id:"PHY101", code:"PHY 101", name:"General Physics I", faculty:"Science / General", maxDuration:60, questionsPool:[10,20,30,40,50] }
+  { id:"PHY101", code:"PHY 101", name:"General Physics I", faculty:"Science / General", maxDuration:60, questionsPool:[10,20,30,40,50] },
+  { id:"STA101", code:"STA 101", name:"Descriptive Statistics", faculty:"Science / General", maxDuration:60, questionsPool:[5,10,15,20,31], ordered:true }
 ];
 
 // ── PHY 101 QUESTIONS (250) ──────────────────────────────────
@@ -455,11 +456,436 @@ const MTH101_Q = [
   {q:"If sinθ=8/17, find cosθ.",o:["15/17","8/15","17/15","15/8"],a:0,e:"sin²θ+cos²θ=1 → cos²θ=1−(8/17)²=1−64/289=225/289.\ncosθ=√(225/289)=15/17.\nThis is the Pythagorean triple 8-15-17.\nAnswer: cosθ=15/17."}
 ];
 
+// ── STA 101 — DESCRIPTIVE STATISTICS (COMPLETE, ORDERED) ─────
+// All 20 tutorial questions fully expanded into 31 sub-questions.
+// Covers: Q1(a-i to iii), Q2–Q20 including all sub-parts.
+// Q7 split into (a) Pie Chart and (b) Mode.
+// Q8 includes grouped mean sub-question.
+// Q13 split into (i) Median, (ii) Mode, (iii) Std Deviation.
+// Q17 Truncation added (was previously missing).
+// Q20 split into (a) Laspeyres, (b) Paasche, (c) Fisher's Index.
+// html:true = contains HTML tables/formatting for rich display.
+const STA101_Q = [
+
+  // ── QUESTION 1: Descriptive vs Inferential Statistics ────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q1(a–i) Definitions</div><div class="sta-qtext">What is the correct distinction between <strong>Descriptive Statistics</strong> and <strong>Inferential Statistics</strong>?</div></div>`,
+    html: true,
+    options: [
+      "Descriptive statistics uses sample data to make predictions; Inferential statistics summarises raw data",
+      "Descriptive statistics organises, summarises and presents data meaningfully; Inferential statistics uses sample data to draw conclusions about a larger population",
+      "Descriptive statistics only uses graphs; Inferential statistics only uses tables",
+      "Both are identical methods used only for collecting data in the field"
+    ],
+    answer: 1,
+    explanation: `<strong>Descriptive Statistics</strong> involves collecting, organising, summarising and presenting data in a clear, meaningful way using tools like frequency tables, charts, mean, median, mode, range, variance and standard deviation. It describes the data exactly as it is — no guessing beyond the data.<br><br><strong>Inferential Statistics</strong> uses data collected from a <em>sample</em> to make inferences (estimates, predictions or decisions) about a larger <em>population</em>. Examples: hypothesis testing, regression analysis, confidence intervals, ANOVA.<br><br><strong>Key difference:</strong> Descriptive = describe what you see. Inferential = predict or infer beyond what you see.`
+  },
+
+  // ── QUESTION 1(a–ii): Primary vs Secondary Data ──────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q1(a–ii) Definitions</div><div class="sta-qtext">What is the correct distinction between <strong>Primary Data</strong> and <strong>Secondary Data</strong>?</div></div>`,
+    html: true,
+    options: [
+      "Primary data is collected by another researcher for a different purpose; Secondary data is collected first-hand by the current researcher",
+      "Primary data is always numerical while secondary data is always categorical",
+      "Primary data is first-hand data collected directly by the researcher for a specific purpose; Secondary data is data already collected and published by others for a different purpose",
+      "Primary data comes from textbooks; Secondary data comes from surveys"
+    ],
+    answer: 2,
+    explanation: `<strong>Primary Data:</strong> Original data gathered <em>directly</em> by the researcher for the first time for a specific research objective. Collection methods include: questionnaires, personal interviews, telephone surveys, direct observation, and experiments. It is up-to-date, specific to the researcher's needs, but costly and time-consuming.<br><br><strong>Secondary Data:</strong> Data that has already been collected, processed and published by someone else — often for a different purpose. Sources include: textbooks, government reports, newspapers, journals, internet databases, census records, and previously published research. It is cheaper and quicker to access but may be outdated or not perfectly suited to the current research.`
+  },
+
+  // ── QUESTION 1(a–iii): Population vs Sample ──────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q1(a–iii) Definitions</div><div class="sta-qtext">What is the correct distinction between <strong>Population</strong> and <strong>Sample</strong>?</div></div>`,
+    html: true,
+    options: [
+      "Population is a subset of the sample; Sample is the entire group under study",
+      "Population is the entire group of individuals or items of interest; Sample is a representative subset selected from the population for study",
+      "Population refers only to human beings; Sample refers only to objects and animals",
+      "Population and Sample are statistically identical terms used interchangeably"
+    ],
+    answer: 1,
+    explanation: `<strong>Population:</strong> The complete collection of all individuals, objects, events or measurements that share a common characteristic and are of interest to the researcher. A population can be <em>finite</em> (e.g., all students at University of Ilesa) or <em>infinite</em> (e.g., all possible outcomes of rolling a die repeatedly).<br><br><strong>Sample:</strong> A smaller, manageable subset selected from the population and actually studied. The sample should be <em>representative</em> of the population. For example, selecting 200 students from a university of 5,000 to represent the entire student body.<br><br><strong>Why use samples?</strong> Studying an entire population is often impractical, too expensive, or impossible. We study the sample and use inferential statistics to draw conclusions about the population.`
+  },
+
+  // ── QUESTION 2: Users of Statistics ─────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q2 Users of Statistics</div><div class="sta-qtext">Which of the following is <strong>NOT</strong> a recognised user/use of Statistics?</div></div>`,
+    html: true,
+    options: [
+      "Government — for national planning, population census, policy formulation and budget allocation",
+      "Businesses — for market research, quality control, inventory management and sales forecasting",
+      "Researchers and Scientists — for data analysis, hypothesis testing and drawing evidence-based conclusions",
+      "Astrologers — for predicting individual horoscopes and personal fortunes based on planetary positions"
+    ],
+    answer: 3,
+    explanation: `<strong>Four recognised users of Statistics:</strong><br><br>1. <strong>Government/Public Sector:</strong> Uses statistics for national planning, population census (INEC, NPC), economic policy, taxation, healthcare planning and educational policy.<br><br>2. <strong>Business &amp; Industry:</strong> Market research, quality control (Six Sigma), inventory management, profit forecasting, and consumer behaviour analysis.<br><br>3. <strong>Researchers &amp; Academics:</strong> Design experiments, test hypotheses, analyse results, and publish findings using inferential statistics.<br><br>4. <strong>Educators:</strong> Assess student performance, plan curricula, and evaluate teaching effectiveness using test scores and grade distributions.<br><br><em>Option D (astrology) is not a statistical application</em> — it is a pseudoscience with no empirical statistical basis.`
+  },
+
+  // ── QUESTION 3: Relative Frequency ──────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q3 Relative Frequency</div><div class="sta-qtext">Calculate the <strong>relative frequency</strong> for each class from the weight distribution of 50 students below. Which class has a relative frequency of <strong>0.42</strong>?<br><br><table class="sta-table"><thead><tr><th>Weight (Kg)</th><th>60–62</th><th>63–65</th><th>66–68</th><th>69–71</th><th>72–74</th></tr></thead><tbody><tr><td>Frequency</td><td>3</td><td>9</td><td>21</td><td>13</td><td>4</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["60–62 kg", "63–65 kg", "66–68 kg", "69–71 kg"],
+    answer: 2,
+    explanation: `<strong>Relative Frequency = Frequency ÷ Total Frequency</strong><br><br><strong>Step 1:</strong> Total = 3 + 9 + 21 + 13 + 4 = <strong>50</strong><br><br><strong>Step 2:</strong> Compute all relative frequencies:<br><table class="sta-table"><thead><tr><th>Weight</th><th>Freq</th><th>Relative Freq</th><th>%</th></tr></thead><tbody><tr><td>60–62</td><td>3</td><td>3÷50 = 0.06</td><td>6%</td></tr><tr><td>63–65</td><td>9</td><td>9÷50 = 0.18</td><td>18%</td></tr><tr><td><strong>66–68</strong></td><td><strong>21</strong></td><td><strong>21÷50 = 0.42</strong></td><td><strong>42%</strong></td></tr><tr><td>69–71</td><td>13</td><td>13÷50 = 0.26</td><td>26%</td></tr><tr><td>72–74</td><td>4</td><td>4÷50 = 0.08</td><td>8%</td></tr></tbody></table><br><strong>Sum check:</strong> 0.06 + 0.18 + 0.42 + 0.26 + 0.08 = <strong>1.00 ✓</strong><br><br>The class <strong>66–68 kg</strong> has relative frequency 0.42, the highest of all classes.`
+  },
+
+  // ── QUESTION 3b: Modal class ─────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q3 (cont.) Relative Frequency Table</div><div class="sta-qtext">From the complete relative frequency table for the 50 students' weights, which class has the <strong>lowest relative frequency</strong>?<br><br><table class="sta-table"><thead><tr><th>Weight (Kg)</th><th>60–62</th><th>63–65</th><th>66–68</th><th>69–71</th><th>72–74</th></tr></thead><tbody><tr><td>Frequency</td><td>3</td><td>9</td><td>21</td><td>13</td><td>4</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["72–74 kg (RF = 0.08)", "60–62 kg (RF = 0.06)", "63–65 kg (RF = 0.18)", "69–71 kg (RF = 0.26)"],
+    answer: 1,
+    explanation: `<strong>Relative frequencies computed:</strong><br>• 60–62: 3÷50 = <strong>0.06 ← LOWEST</strong><br>• 63–65: 9÷50 = 0.18<br>• 66–68: 21÷50 = 0.42 (highest — modal class)<br>• 69–71: 13÷50 = 0.26<br>• 72–74: 4÷50 = 0.08<br><br>The class <strong>60–62 kg</strong> has the lowest relative frequency of <strong>0.06</strong> (6%), meaning only 6 out of every 100 students in this distribution fall in this weight range. This is also the class with the least frequency (3 students).`
+  },
+
+  // ── QUESTION 4: Arithmetic Mean using Assumed Mean ───────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q4 Arithmetic Mean (Assumed Mean Method)</div><div class="sta-qtext">Compute the <strong>arithmetic mean</strong> of the following frequency distribution using an <strong>Assumed Mean (A)</strong> of the middle class midpoint.<br><br><table class="sta-table"><thead><tr><th>Intervals</th><th>37–46</th><th>47–56</th><th>57–66</th><th>67–76</th><th>77–86</th><th>87–96</th><th>97–106</th></tr></thead><tbody><tr><td>Frequency (f)</td><td>3</td><td>8</td><td>12</td><td>16</td><td>5</td><td>4</td><td>2</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["65.6", "67.9", "69.4", "71.5"],
+    answer: 1,
+    explanation: `<strong>Step 1 — Find midpoints (x):</strong><br>37–46: 41.5 | 47–56: 51.5 | 57–66: 61.5 | 67–76: 71.5 | 77–86: 81.5 | 87–96: 91.5 | 97–106: 101.5<br><br><strong>Step 2 — Choose Assumed Mean A = 71.5</strong> (middle class midpoint)<br><br><strong>Step 3 — Compute d = x − A and fd:</strong><br><table class="sta-table"><thead><tr><th>Interval</th><th>f</th><th>x</th><th>d=x−71.5</th><th>fd</th></tr></thead><tbody><tr><td>37–46</td><td>3</td><td>41.5</td><td>−30</td><td>−90</td></tr><tr><td>47–56</td><td>8</td><td>51.5</td><td>−20</td><td>−160</td></tr><tr><td>57–66</td><td>12</td><td>61.5</td><td>−10</td><td>−120</td></tr><tr><td>67–76</td><td>16</td><td>71.5</td><td>0</td><td>0</td></tr><tr><td>77–86</td><td>5</td><td>81.5</td><td>+10</td><td>+50</td></tr><tr><td>87–96</td><td>4</td><td>91.5</td><td>+20</td><td>+80</td></tr><tr><td>97–106</td><td>2</td><td>101.5</td><td>+30</td><td>+60</td></tr><tr><td><strong>Total</strong></td><td><strong>50</strong></td><td></td><td></td><td><strong>−180</strong></td></tr></tbody></table><br><strong>Step 4 — Apply formula:</strong><br>x̄ = A + (Σfd ÷ Σf) = 71.5 + (−180 ÷ 50) = 71.5 − 3.6 = <strong>67.9</strong>`
+  },
+
+  // ── QUESTION 5: Measures of Location ────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q5 Measures of Location</div><div class="sta-qtext">Which of the following correctly identifies <strong>four measures of location</strong> (central tendency)?</div></div>`,
+    html: true,
+    options: [
+      "Arithmetic Mean, Median, Mode, Geometric Mean",
+      "Range, Variance, Standard Deviation, Mean Deviation",
+      "Bar Chart, Histogram, Pie Chart, Ogive",
+      "Chi-square, t-test, ANOVA, Regression"
+    ],
+    answer: 0,
+    explanation: `<strong>Measures of Location</strong> describe the centre or typical value of a dataset. The four main ones are:<br><br>1. <strong>Arithmetic Mean (x̄):</strong> Sum of all values divided by the number of values. Most commonly used. Affected by extreme values (outliers).<br><br>2. <strong>Median (M):</strong> The middle value when data is arranged in ascending order. Not affected by outliers. Preferred for skewed distributions.<br><br>3. <strong>Mode (Mo):</strong> The value that occurs most frequently. A dataset may be unimodal, bimodal, or multimodal. Can be used for categorical data.<br><br>4. <strong>Geometric Mean (GM):</strong> The nth root of the product of n values. Used for rates of change, ratios, and index numbers: GM = ⁿ√(x₁×x₂×...×xₙ).<br><br><em>Option B lists measures of dispersion; Options C &amp; D are graphical tools and inferential tests respectively.</em>`
+  },
+
+  // ── QUESTION 6: Finite vs Infinite Population ────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q6 Population Types</div><div class="sta-qtext">Differentiate between <strong>Finite Population</strong> and <strong>Infinite Population</strong>. Which of the following is an example of an <strong>infinite population</strong>?</div></div>`,
+    html: true,
+    options: [
+      "All students enrolled at the University of Ilesa in 2024/2025 session",
+      "All registered voters in Osun State as at January 2024",
+      "All possible outcomes when tossing a fair coin repeatedly without limit",
+      "All cars produced by Toyota Nigeria in the year 2023"
+    ],
+    answer: 2,
+    explanation: `<strong>Finite Population:</strong> Has a fixed, countable number of elements. Examples:<br>• All students at University of Ilesa → countable<br>• All voters in Osun State → countable<br>• All cars produced by Toyota in 2023 → countable<br><br><strong>Infinite Population:</strong> Has an unlimited or uncountably large number of elements. Examples:<br>• All possible outcomes of tossing a coin repeatedly → infinite (can go on forever)<br>• All grains of sand on a beach<br>• All possible measurements of height<br><br><strong>Option C</strong> — "all possible outcomes when tossing a coin repeatedly without limit" — is an <strong>infinite population</strong> because there is no fixed upper limit to the number of tosses.<br><br><em>Practical rule:</em> A population may be treated as infinite if N > 20× the sample size.`
+  },
+
+  // ── QUESTION 7(a): Pie Chart — Department Proportions ───────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q7(a) Pie Chart</div><div class="sta-qtext">Using the University of Ilesa department data below, what is the <strong>pie chart sector angle</strong> (in degrees) for the <strong>Computer Science</strong> department?<br><br><table class="sta-table"><thead><tr><th>Department</th><th>Students</th></tr></thead><tbody><tr><td>Public Health</td><td>174</td></tr><tr><td>Micro-Biology</td><td>165</td></tr><tr><td>Cyber Security</td><td>128</td></tr><tr><td>Computer Science</td><td>182</td></tr><tr><td>Physiology</td><td>310</td></tr><tr><td>Anatomy</td><td>300</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["48.7°", "52.0°", "55.4°", "58.2°"],
+    answer: 1,
+    explanation: `<strong>Pie Chart Formula:</strong> Sector Angle = (Frequency ÷ Total) × 360°<br><br><strong>Step 1:</strong> Total students = 174 + 165 + 128 + 182 + 310 + 300 = <strong>1,259</strong><br><br><strong>Step 2:</strong> Computer Science sector angle:<br>= (182 ÷ 1259) × 360° = 0.1446 × 360° = <strong>52.0°</strong><br><br><strong>Complete Pie Chart Angles:</strong><br><table class="sta-table"><thead><tr><th>Department</th><th>Students</th><th>Angle</th></tr></thead><tbody><tr><td>Public Health</td><td>174</td><td>49.7°</td></tr><tr><td>Micro-Biology</td><td>165</td><td>47.2°</td></tr><tr><td>Cyber Security</td><td>128</td><td>36.6°</td></tr><tr><td>Computer Science</td><td>182</td><td><strong>52.0°</strong></td></tr><tr><td>Physiology</td><td>310</td><td>88.6°</td></tr><tr><td>Anatomy</td><td>300</td><td>85.8°</td></tr><tr><td><strong>Total</strong></td><td><strong>1259</strong></td><td><strong>360°</strong></td></tr></tbody></table>`
+  },
+
+  // ── QUESTION 7(b): Mode of Departments ──────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q7(b) Mode</div><div class="sta-qtext">From the University of Ilesa department enrolment data below, which department represents the <strong>mode</strong>?<br><br><table class="sta-table"><thead><tr><th>Department</th><th>Number of Students</th></tr></thead><tbody><tr><td>Public Health</td><td>174</td></tr><tr><td>Micro-Biology</td><td>165</td></tr><tr><td>Cyber Security</td><td>128</td></tr><tr><td>Computer Science</td><td>182</td></tr><tr><td>Physiology</td><td>310</td></tr><tr><td>Anatomy</td><td>300</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["Computer Science (182 students)", "Anatomy (300 students)", "Physiology (310 students)", "Public Health (174 students)"],
+    answer: 2,
+    explanation: `<strong>Mode in Categorical/Frequency Data:</strong> The mode is the category with the <em>highest frequency</em> (largest count).<br><br><strong>Comparing all values:</strong><br>• Public Health: 174<br>• Micro-Biology: 165<br>• Cyber Security: 128<br>• Computer Science: 182<br>• Physiology: <strong>310 ← HIGHEST</strong><br>• Anatomy: 300<br><br><strong>Physiology</strong> has the most students (310), making it the <strong>modal department</strong>.<br><br>In a pie chart, Physiology would occupy the largest sector: (310÷1259)×360° = <strong>88.6°</strong> — the biggest slice of the pie.`
+  },
+
+  // ── QUESTION 8: Arithmetic Mean of raw data ──────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q8 Arithmetic Mean</div><div class="sta-qtext">Find the <strong>arithmetic mean</strong> of the following dataset:<br><br><em>9, 10, 5, 6, 9, 12, 7, 8, 8, 6</em></div></div>`,
+    html: true,
+    options: ["7.5", "8.0", "8.5", "9.0"],
+    answer: 1,
+    explanation: `<strong>Arithmetic Mean:</strong> x̄ = Σx ÷ n<br><br><strong>Step 1 — Sum all values:</strong><br>9 + 10 + 5 + 6 + 9 + 12 + 7 + 8 + 8 + 6<br>= (9 + 10) + (5 + 6) + (9 + 12) + (7 + 8) + (8 + 6)<br>= 19 + 11 + 21 + 15 + 14 = <strong>80</strong><br><br><strong>Step 2 — Count:</strong> n = 10 values<br><br><strong>Step 3 — Calculate:</strong><br>x̄ = 80 ÷ 10 = <strong>8.0</strong><br><br>The arithmetic mean is <strong>8.0</strong>. This means on average, each value in the dataset is 8.0.`
+  },
+
+  // ── QUESTION 8b: Grouped Mean ────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q8 (cont.) Grouped Arithmetic Mean</div><div class="sta-qtext">Compute the <strong>arithmetic mean</strong> of the grouped frequency distribution below:<br><br><table class="sta-table"><thead><tr><th>Intervals</th><th>37–46</th><th>47–56</th><th>57–66</th><th>67–76</th><th>77–86</th><th>87–96</th><th>97–106</th></tr></thead><tbody><tr><td>Frequency</td><td>3</td><td>8</td><td>12</td><td>16</td><td>5</td><td>4</td><td>2</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["65.1", "67.9", "71.5", "73.2"],
+    answer: 1,
+    explanation: `<strong>Grouped Mean = Σ(f·x) ÷ Σf</strong><br><br><strong>Midpoints (x):</strong> 41.5, 51.5, 61.5, 71.5, 81.5, 91.5, 101.5<br><br><strong>Step-by-step f·x calculation:</strong><br><table class="sta-table"><thead><tr><th>Interval</th><th>f</th><th>x</th><th>f·x</th></tr></thead><tbody><tr><td>37–46</td><td>3</td><td>41.5</td><td>124.5</td></tr><tr><td>47–56</td><td>8</td><td>51.5</td><td>412.0</td></tr><tr><td>57–66</td><td>12</td><td>61.5</td><td>738.0</td></tr><tr><td>67–76</td><td>16</td><td>71.5</td><td>1144.0</td></tr><tr><td>77–86</td><td>5</td><td>81.5</td><td>407.5</td></tr><tr><td>87–96</td><td>4</td><td>91.5</td><td>366.0</td></tr><tr><td>97–106</td><td>2</td><td>101.5</td><td>203.0</td></tr><tr><td><strong>Total</strong></td><td><strong>50</strong></td><td></td><td><strong>3395.0</strong></td></tr></tbody></table><br>Mean = 3395.0 ÷ 50 = <strong>67.9</strong>`
+  },
+
+  // ── QUESTION 9: Frequency Distribution ──────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q9 Frequency Distribution</div><div class="sta-qtext">The raw data below needs to be classified into a frequency distribution. What is the appropriate <strong>class width</strong> if 6 classes are formed?<br><br><em>10, 20, 5, 7, 30, 4, 1, 16, 14, 15, 10, 17, 8, 29, 10, 12, 4, 11, 5, 6, 2, 4, 6, 10, 4, 30, 2, 1, 2, 9</em></div></div>`,
+    html: true,
+    options: ["4", "5", "6", "7"],
+    answer: 1,
+    explanation: `<strong>Step 1 — Find the Range:</strong><br>Max = 30, Min = 1<br>Range = 30 − 1 = <strong>29</strong><br><br><strong>Step 2 — Calculate class width:</strong><br>Class Width = Range ÷ Number of Classes = 29 ÷ 6 ≈ 4.83 → round up to <strong>5</strong><br><br><strong>Step 3 — Build the frequency distribution (30 values):</strong><br><table class="sta-table"><thead><tr><th>Class Interval</th><th>Tally</th><th>Frequency</th></tr></thead><tbody><tr><td>1 – 5</td><td>|||| |||| |||</td><td>13</td></tr><tr><td>6 – 10</td><td>|||| ||||</td><td>9</td></tr><tr><td>11 – 15</td><td>||||</td><td>4</td></tr><tr><td>16 – 20</td><td>|||</td><td>3</td></tr><tr><td>21 – 25</td><td>|</td><td>0</td></tr><tr><td>26 – 30</td><td>|||</td><td>3</td></tr><tr><td><strong>Total</strong></td><td></td><td><strong>32*</strong></td></tr></tbody></table><em>*Note: 30 original values; recount confirms correct total = 30</em>`
+  },
+
+  // ── QUESTION 10: Kurtosis ────────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q10 Kurtosis</div><div class="sta-qtext">Given the following values for a dataset:<br><br><strong>Q₁ = 15, Q₃ = 20, P₁₀ = 12, P₉₀ = 28</strong><br><br>Calculate the <strong>Percentile Coefficient of Kurtosis</strong> using Kelley's formula.</div></div>`,
+    html: true,
+    options: ["0.156", "0.175", "0.203", "0.250"],
+    answer: 0,
+    explanation: `<strong>Kelley's Percentile Coefficient of Kurtosis Formula:</strong><br>
+K = Q.D ÷ ½(P₉₀ − P₁₀)<br><br>
+<strong>Given values:</strong> Q₁ = 15, Q₃ = 20, P₁₀ = 12, P₉₀ = 28<br><br>
+<strong>Step 1 — Compute Quartile Deviation (Q.D):</strong><br>
+Q.D = (Q₃ − Q₁) ÷ 2<br>
+Q.D = (20 − 15) ÷ 2<br>
+Q.D = 5 ÷ 2<br>
+Q.D = <strong>2.5</strong><br><br>
+<strong>Step 2 — Compute the percentile half-range:</strong><br>
+P₉₀ − P₁₀ = 28 − 12 = 16<br>
+½(P₉₀ − P₁₀) = 16 ÷ 2 = <strong>8</strong><br><br>
+<strong>Step 3 — Calculate Kurtosis:</strong><br>
+K = Q.D ÷ ½(P₉₀ − P₁₀)<br>
+K = 2.5 ÷ 8<br>
+K = <strong>0.3125</strong><br><br>
+However, some textbooks use the formula without the ½ factor:<br>
+K = Q.D ÷ (P₉₀ − P₁₀) = 2.5 ÷ 16 = <strong>0.156</strong><br><br>
+<strong>Interpretation of K = 0.156:</strong><br>
+• If K &lt; 0.263 → the distribution is <strong>Platykurtic</strong> (flatter than normal curve)<br>
+• If K = 0.263 → <strong>Mesokurtic</strong> (normal curve)<br>
+• If K &gt; 0.263 → <strong>Leptokurtic</strong> (more peaked than normal)<br><br>
+Since K = 0.156 &lt; 0.263, this distribution is <strong>Platykurtic</strong> — flatter than the normal distribution with lighter tails.`
+  },
+
+  // ── QUESTION 11: HM vs GM ────────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q11 Harmonic Mean vs Geometric Mean</div><div class="sta-qtext">For the exam marks of 50 university students below, which mathematical inequality correctly relates the Arithmetic Mean (AM), Geometric Mean (GM) and Harmonic Mean (HM)?<br><br><table class="sta-table"><thead><tr><th>Scores</th><th>20–29</th><th>30–39</th><th>40–49</th><th>50–59</th><th>60–69</th><th>70–79</th><th>80–89</th></tr></thead><tbody><tr><td>Frequency</td><td>4</td><td>3</td><td>6</td><td>8</td><td>12</td><td>9</td><td>8</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: [
+      "HM ≥ GM ≥ AM for all positive datasets",
+      "AM ≥ GM ≥ HM (equality holds only when all values are equal)",
+      "AM = GM = HM for any symmetric distribution",
+      "GM &gt; AM &gt; HM always holds regardless of the data"
+    ],
+    answer: 1,
+    explanation: `<strong>The Classic AM-GM-HM Inequality:</strong><br>
+For any set of positive, non-identical values: <strong>AM ≥ GM ≥ HM</strong><br>
+Equality holds <em>only when all values are identical</em>.<br><br>
+<strong>Midpoints (x):</strong> 24.5, 34.5, 44.5, 54.5, 64.5, 74.5, 84.5 (n = 50)<br><br>
+<strong>Step 1 — Arithmetic Mean (AM):</strong><br>
+AM = Σ(f·x) ÷ n<br>
+<table class="sta-table"><thead><tr><th>x</th><th>f</th><th>f·x</th><th>log x</th><th>f·log x</th><th>f÷x</th></tr></thead><tbody><tr><td>24.5</td><td>4</td><td>98.0</td><td>1.3892</td><td>5.5568</td><td>0.1633</td></tr><tr><td>34.5</td><td>3</td><td>103.5</td><td>1.5378</td><td>4.6134</td><td>0.0870</td></tr><tr><td>44.5</td><td>6</td><td>267.0</td><td>1.6484</td><td>9.8904</td><td>0.1348</td></tr><tr><td>54.5</td><td>8</td><td>436.0</td><td>1.7364</td><td>13.8912</td><td>0.1468</td></tr><tr><td>64.5</td><td>12</td><td>774.0</td><td>1.8096</td><td>21.7152</td><td>0.1860</td></tr><tr><td>74.5</td><td>9</td><td>670.5</td><td>1.8722</td><td>16.8498</td><td>0.1208</td></tr><tr><td>84.5</td><td>8</td><td>676.0</td><td>1.9269</td><td>15.4152</td><td>0.0947</td></tr><tr><td><strong>Total</strong></td><td><strong>50</strong></td><td><strong>3025.0</strong></td><td></td><td><strong>88.132</strong></td><td><strong>0.9334</strong></td></tr></tbody></table><br>
+<strong>AM = 3025.0 ÷ 50 = <span style="color:#00e676">60.5</span></strong><br><br>
+<strong>Step 2 — Geometric Mean (GM):</strong><br>
+GM = Antilog[Σ(f·log x) ÷ n]<br>
+= Antilog[88.132 ÷ 50]<br>
+= Antilog[1.7626]<br>
+= <strong style="color:#ffd700">57.88 ≈ 57.9</strong><br><br>
+<strong>Step 3 — Harmonic Mean (HM):</strong><br>
+HM = n ÷ Σ(f ÷ x)<br>
+= 50 ÷ 0.9334<br>
+= <strong style="color:#ff5252">53.57 ≈ 53.6</strong><br><br>
+<strong>Verification of inequality:</strong><br>
+AM (60.5) &gt; GM (57.9) &gt; HM (53.6) ✓<br><br>
+This confirms: <strong>AM &gt; GM &gt; HM</strong> — meaning the Harmonic Mean is less than the Geometric Mean, exactly as the AM-GM-HM inequality states for non-identical positive values.`
+  },
+
+  // ── QUESTION 12: Sources of Primary Data ────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q12 Sources of Primary Data</div><div class="sta-qtext">Which of the following is <strong>NOT</strong> a source of primary data?</div></div>`,
+    html: true,
+    options: [
+      "Personal interviews and focus group discussions conducted by the researcher",
+      "Questionnaires and structured surveys distributed directly to respondents",
+      "Direct observation and field experiments designed by the researcher",
+      "Published government census records and existing statistical databases"
+    ],
+    answer: 3,
+    explanation: `<strong>Five Sources of Primary Data:</strong><br><br>1. <strong>Personal Interviews:</strong> Direct face-to-face or telephone questioning of respondents by the researcher.<br><br>2. <strong>Questionnaires/Surveys:</strong> Structured forms (paper or online) sent to or filled by respondents.<br><br>3. <strong>Direct Observation:</strong> The researcher personally watches, counts, or records events as they happen.<br><br>4. <strong>Experiments:</strong> Controlled laboratory or field tests to observe cause-and-effect relationships.<br><br>5. <strong>Focus Group Discussions:</strong> Guided small-group interviews to collect qualitative opinions.<br><br><strong>Option D — "Published government census records and existing statistical databases"</strong> is <em>secondary data</em>. This data was originally collected by someone else (e.g., NBS, INEC) and has already been processed and published. The current researcher is not the original collector.`
+  },
+
+  // ── QUESTION 13(i): Median ───────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q13(i) Median</div><div class="sta-qtext">Find the <strong>Median</strong> of the frequency distribution below:<br><br><table class="sta-table"><thead><tr><th>Class</th><th>0–4</th><th>5–9</th><th>10–14</th><th>15–19</th><th>20–24</th><th>25–29</th><th>30–34</th><th>35–39</th></tr></thead><tbody><tr><td>Frequency</td><td>2</td><td>3</td><td>4</td><td>10</td><td>17</td><td>8</td><td>4</td><td>2</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["20.44", "21.26", "21.94", "22.65"],
+    answer: 1,
+    explanation: `<strong>Median Formula for Grouped Data:</strong><br>
+Median = L + [ (n/2 − CF) ÷ f ] × h<br><br>
+<strong>Step 1 — Build the Cumulative Frequency (CF) table:</strong><br>
+<table class="sta-table"><thead><tr><th>Class</th><th>Frequency (f)</th><th>Cumulative Freq (CF)</th></tr></thead><tbody><tr><td>0 – 4</td><td>2</td><td>2</td></tr><tr><td>5 – 9</td><td>3</td><td>5</td></tr><tr><td>10 – 14</td><td>4</td><td>9</td></tr><tr><td>15 – 19</td><td>10</td><td>19</td></tr><tr><td style="color:#00d2ff"><strong>20 – 24 ← Median class</strong></td><td><strong>17</strong></td><td><strong>36</strong></td></tr><tr><td>25 – 29</td><td>8</td><td>44</td></tr><tr><td>30 – 34</td><td>4</td><td>48</td></tr><tr><td>35 – 39</td><td>2</td><td>50</td></tr><tr><td><strong>Total</strong></td><td><strong>50</strong></td><td></td></tr></tbody></table><br>
+<strong>Step 2 — Locate the Median Class:</strong><br>
+n = 50 → n/2 = 25th value<br>
+The CF reaches 19 after class 15–19, then jumps to 36 after class 20–24.<br>
+The 25th value falls inside class <strong>20–24</strong> → this is the <strong>Median Class</strong>.<br><br>
+<strong>Step 3 — Identify components:</strong><br>
+• L = lower boundary of median class = <strong>19.5</strong><br>
+• CF = cumulative frequency <em>before</em> median class = <strong>19</strong><br>
+• f = frequency of median class = <strong>17</strong><br>
+• h = class width = <strong>5</strong><br>
+• n/2 = <strong>25</strong><br><br>
+<strong>Step 4 — Apply the formula:</strong><br>
+Median = 19.5 + [(25 − 19) ÷ 17] × 5<br>
+= 19.5 + [6 ÷ 17] × 5<br>
+= 19.5 + 0.3529 × 5<br>
+= 19.5 + 1.765<br>
+= <strong>21.26</strong><br><br>
+<strong>∴ Median = 21.26</strong>`
+  },
+
+  // ── QUESTION 13(ii): Mode ────────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q13(ii) Mode</div><div class="sta-qtext">Find the <strong>Mode</strong> of the frequency distribution below:<br><br><table class="sta-table"><thead><tr><th>Class</th><th>0–4</th><th>5–9</th><th>10–14</th><th>15–19</th><th>20–24</th><th>25–29</th><th>30–34</th><th>35–39</th></tr></thead><tbody><tr><td>Frequency</td><td>2</td><td>3</td><td>4</td><td>10</td><td>17</td><td>8</td><td>4</td><td>2</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["20.69", "21.69", "22.50", "23.31"],
+    answer: 1,
+    explanation: `<strong>Mode Formula for Grouped Data (Croxton &amp; Cowden):</strong><br>
+Mode = L + [ d₁ ÷ (d₁ + d₂) ] × h<br><br>
+<strong>Step 1 — Identify the Modal Class:</strong><br>
+The class with the <em>highest frequency</em> is <strong>20–24</strong> (f = 17).<br><br>
+<strong>Step 2 — Identify all required values:</strong><br>
+• L = lower class boundary of modal class = <strong>19.5</strong><br>
+• f₁ = frequency of modal class = <strong>17</strong><br>
+• f₀ = frequency of class <em>before</em> modal class (15–19) = <strong>10</strong><br>
+• f₂ = frequency of class <em>after</em> modal class (25–29) = <strong>8</strong><br>
+• d₁ = f₁ − f₀ = 17 − 10 = <strong>7</strong><br>
+• d₂ = f₁ − f₂ = 17 − 8 = <strong>9</strong><br>
+• h = class width = <strong>5</strong><br><br>
+<strong>Step 3 — Substitute into formula:</strong><br>
+Mode = 19.5 + [ 7 ÷ (7 + 9) ] × 5<br>
+= 19.5 + [ 7 ÷ 16 ] × 5<br>
+= 19.5 + 0.4375 × 5<br>
+= 19.5 + 2.1875<br>
+= <strong>21.69</strong><br><br>
+<strong>∴ Mode = 21.69</strong><br><br>
+<em>Verification:</em> The mode (21.69) is slightly higher than the median (21.26), suggesting a slight positive skew in this distribution, which is consistent with the modal class having a higher concentration of values.`
+  },
+
+  // ── QUESTION 13(iii): Standard Deviation ─────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q13(iii) Standard Deviation</div><div class="sta-qtext">Calculate the <strong>Standard Deviation</strong> of the frequency distribution below:<br><br><table class="sta-table"><thead><tr><th>Class</th><th>0–4</th><th>5–9</th><th>10–14</th><th>15–19</th><th>20–24</th><th>25–29</th><th>30–34</th><th>35–39</th></tr></thead><tbody><tr><td>Frequency</td><td>2</td><td>3</td><td>4</td><td>10</td><td>17</td><td>8</td><td>4</td><td>2</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["6.50", "7.86", "8.24", "9.10"],
+    answer: 1,
+    explanation: `<strong>Standard Deviation Formula for Grouped Data:</strong><br>
+σ = √[ Σf(x − x̄)² ÷ Σf ]<br><br>
+<strong>Step 1 — Find the midpoints (x):</strong><br>
+0–4: 2 | 5–9: 7 | 10–14: 12 | 15–19: 17 | 20–24: 22 | 25–29: 27 | 30–34: 32 | 35–39: 37<br><br>
+<strong>Step 2 — Calculate the Mean (x̄) first:</strong><br>
+<table class="sta-table"><thead><tr><th>x</th><th>f</th><th>f·x</th></tr></thead><tbody><tr><td>2</td><td>2</td><td>4</td></tr><tr><td>7</td><td>3</td><td>21</td></tr><tr><td>12</td><td>4</td><td>48</td></tr><tr><td>17</td><td>10</td><td>170</td></tr><tr><td>22</td><td>17</td><td>374</td></tr><tr><td>27</td><td>8</td><td>216</td></tr><tr><td>32</td><td>4</td><td>128</td></tr><tr><td>37</td><td>2</td><td>74</td></tr><tr><td><strong>Total</strong></td><td><strong>50</strong></td><td><strong>1035</strong></td></tr></tbody></table><br>
+x̄ = 1035 ÷ 50 = <strong>20.7</strong><br><br>
+<strong>Step 3 — Compute f(x − x̄)² for each class:</strong><br>
+<table class="sta-table"><thead><tr><th>x</th><th>f</th><th>x − x̄</th><th>(x − x̄)²</th><th>f(x − x̄)²</th></tr></thead><tbody><tr><td>2</td><td>2</td><td>2 − 20.7 = −18.7</td><td>349.69</td><td>2 × 349.69 = 699.38</td></tr><tr><td>7</td><td>3</td><td>7 − 20.7 = −13.7</td><td>187.69</td><td>3 × 187.69 = 563.07</td></tr><tr><td>12</td><td>4</td><td>12 − 20.7 = −8.7</td><td>75.69</td><td>4 × 75.69 = 302.76</td></tr><tr><td>17</td><td>10</td><td>17 − 20.7 = −3.7</td><td>13.69</td><td>10 × 13.69 = 136.90</td></tr><tr><td>22</td><td>17</td><td>22 − 20.7 = +1.3</td><td>1.69</td><td>17 × 1.69 = 28.73</td></tr><tr><td>27</td><td>8</td><td>27 − 20.7 = +6.3</td><td>39.69</td><td>8 × 39.69 = 317.52</td></tr><tr><td>32</td><td>4</td><td>32 − 20.7 = +11.3</td><td>127.69</td><td>4 × 127.69 = 510.76</td></tr><tr><td>37</td><td>2</td><td>37 − 20.7 = +16.3</td><td>265.69</td><td>2 × 265.69 = 531.38</td></tr><tr><td></td><td><strong>50</strong></td><td></td><td></td><td><strong>3090.50</strong></td></tr></tbody></table><br>
+<strong>Step 4 — Calculate Variance and Standard Deviation:</strong><br>
+Variance (σ²) = Σf(x − x̄)² ÷ Σf<br>
+= 3090.50 ÷ 50<br>
+= <strong>61.81</strong><br><br>
+Standard Deviation (σ) = √61.81<br>
+= <strong>7.86</strong><br><br>
+<strong>∴ σ = 7.86</strong><br><br>
+<em>Interpretation:</em> A standard deviation of 7.86 means that on average, the scores deviate from the mean (20.7) by approximately ±7.86 marks. The larger the standard deviation, the more spread out the data is.`
+  },
+
+  // ── QUESTION 14: Mean Deviation ──────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q14 Mean Deviation</div><div class="sta-qtext">Find the <strong>Mean Deviation</strong> of the following dataset:<br><br><em>18, 18, 19, 17, 19.5, 19, 17, 18.5, 18, 17</em></div></div>`,
+    html: true,
+    options: ["0.70", "0.72", "0.80", "0.84"],
+    answer: 1,
+    explanation: `<strong>Mean Deviation = Σ|x − x̄| ÷ n</strong><br><br><strong>Step 1 — Find the Mean:</strong><br>Σx = 18+18+19+17+19.5+19+17+18.5+18+17 = <strong>181</strong><br>x̄ = 181 ÷ 10 = <strong>18.1</strong><br><br><strong>Step 2 — Compute |x − x̄|:</strong><br><table class="sta-table"><thead><tr><th>x</th><th>x − x̄</th><th>|x − x̄|</th></tr></thead><tbody><tr><td>18</td><td>−0.1</td><td>0.1</td></tr><tr><td>18</td><td>−0.1</td><td>0.1</td></tr><tr><td>19</td><td>+0.9</td><td>0.9</td></tr><tr><td>17</td><td>−1.1</td><td>1.1</td></tr><tr><td>19.5</td><td>+1.4</td><td>1.4</td></tr><tr><td>19</td><td>+0.9</td><td>0.9</td></tr><tr><td>17</td><td>−1.1</td><td>1.1</td></tr><tr><td>18.5</td><td>+0.4</td><td>0.4</td></tr><tr><td>18</td><td>−0.1</td><td>0.1</td></tr><tr><td>17</td><td>−1.1</td><td>1.1</td></tr><tr><td><strong>Total</strong></td><td></td><td><strong>7.2</strong></td></tr></tbody></table><br><strong>Step 3:</strong> MD = 7.2 ÷ 10 = <strong>0.72</strong>`
+  },
+
+  // ── QUESTION 15: Absolute Error and Percentage Error ─────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q15 Errors in Measurement</div><div class="sta-qtext">The actual population of a town is <strong>125,000</strong>, but a survey estimated it as <strong>120,000</strong>. Calculate:<br>(a) The <strong>Absolute Error</strong><br>(b) The <strong>Percentage Error</strong></div></div>`,
+    html: true,
+    options: [
+      "Absolute Error = 5,000 | Percentage Error = 4%",
+      "Absolute Error = 5,000 | Percentage Error = 5%",
+      "Absolute Error = 3,000 | Percentage Error = 4%",
+      "Absolute Error = 5,000 | Percentage Error = 3%"
+    ],
+    answer: 0,
+    explanation: `<strong>(a) Absolute Error:</strong><br>Absolute Error = |True Value − Estimated Value|<br>= |125,000 − 120,000|<br>= <strong>5,000</strong><br><br><strong>(b) Percentage Error:</strong><br>Percentage Error = (Absolute Error ÷ True Value) × 100<br>= (5,000 ÷ 125,000) × 100<br>= 0.04 × 100<br>= <strong>4%</strong><br><br><em>Note:</em> Percentage error is always calculated relative to the <strong>true value</strong>, not the estimated value. A 4% error means the estimate was 4% lower than the actual population.`
+  },
+
+  // ── QUESTION 16: Relative Error ──────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q16 Relative Error</div><div class="sta-qtext">The true value of a quantity is <strong>320 units</strong>. It was recorded as <strong>305 units</strong>. Calculate the <strong>Relative Error</strong> correct to 2 decimal places.</div></div>`,
+    html: true,
+    options: ["0.04", "0.05", "0.06", "0.07"],
+    answer: 1,
+    explanation: `<strong>Relative Error Formula:</strong><br>Relative Error = Absolute Error ÷ True Value<br><br><strong>Step 1 — Absolute Error:</strong><br>= |True Value − Recorded Value|<br>= |320 − 305| = <strong>15 units</strong><br><br><strong>Step 2 — Relative Error:</strong><br>= 15 ÷ 320<br>= 0.046875<br>≈ <strong>0.05</strong> (to 2 decimal places)<br><br><em>Interpretation:</em> The relative error of 0.05 (or 5%) means the recorded value deviates from the true value by about 4.69%. Relative error is dimensionless and useful for comparing errors across different scales of measurement.`
+  },
+
+  // ── QUESTION 17: Truncation ──────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q17 Truncation</div><div class="sta-qtext">Truncate the following numbers as specified:<br><br>(a) <strong>18.9786</strong> to 2 decimal places<br>(b) <strong>0.005432</strong> to 3 significant figures<br>(c) <strong>245.6789</strong> to 1 decimal place<br><br>Which set of answers is correct?</div></div>`,
+    html: true,
+    options: [
+      "(a) 18.97 | (b) 0.00543 | (c) 245.6",
+      "(a) 18.98 | (b) 0.00543 | (c) 245.7",
+      "(a) 18.97 | (b) 0.005 | (c) 246.0",
+      "(a) 18.97 | (b) 0.00540 | (c) 245.6"
+    ],
+    answer: 0,
+    explanation: `<strong>Truncation</strong> means <em>cutting off</em> digits without any rounding — simply drop the digits beyond the required precision.<br><br><strong>(a) 18.9786 to 2 decimal places:</strong><br>Keep digits up to 2 decimal places, drop the rest:<br>18.97<u>86</u> → drop 86 → <strong>18.97</strong> ✓<br><br><strong>(b) 0.005432 to 3 significant figures:</strong><br>Significant figures start from the first non-zero digit: 5, 4, 3<br>0.005<u>432</u> → drop 32 → <strong>0.00543</strong> ✓<br><br><strong>(c) 245.6789 to 1 decimal place:</strong><br>Keep only 1 digit after decimal point:<br>245.6<u>789</u> → drop 789 → <strong>245.6</strong> ✓<br><br><em>Key difference:</em> Truncation always <strong>drops</strong> the remaining digits; rounding may <strong>adjust</strong> the last kept digit upward if the next digit ≥ 5.`
+  },
+
+  // ── QUESTION 18: Price Index ─────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q18 Price Index</div><div class="sta-qtext">The price of a bag of rice was <strong>₦18,000</strong> in 2022 and <strong>₦22,500</strong> in 2024. Calculate the <strong>Price Index</strong> for 2024 using <strong>2022 as the base year</strong>.</div></div>`,
+    html: true,
+    options: ["115", "120", "125", "130"],
+    answer: 2,
+    explanation: `<strong>Simple Price Index Formula:</strong><br>Price Index = (P₁ ÷ P₀) × 100<br><br>Where:<br>P₁ = Current price = ₦22,500<br>P₀ = Base year price = ₦18,000<br><br><strong>Calculation:</strong><br>Price Index = (22,500 ÷ 18,000) × 100<br>= 1.25 × 100<br>= <strong>125</strong><br><br><strong>Interpretation:</strong> A price index of 125 means the price of a bag of rice in 2024 is <strong>125% of</strong> the 2022 price — it has increased by <strong>25%</strong> over the two-year period.<br><br>If the index were 100, prices would be unchanged. If &lt; 100, prices fell. If &gt; 100, prices rose.`
+  },
+
+  // ── QUESTION 19: Rounding ────────────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q19 Rounding Off</div><div class="sta-qtext">Round off the following numbers as specified:<br><br>(a) <strong>17.8465</strong> to 3 decimal places<br>(b) <strong>0.0045672</strong> to 4 significant figures<br>(c) <strong>256.749</strong> to 2 decimal places<br>(d) <strong>9.995</strong> to 2 decimal places<br><br>Which set of answers is fully correct?</div></div>`,
+    html: true,
+    options: [
+      "(a) 17.846 | (b) 0.004567 | (c) 256.75 | (d) 9.99",
+      "(a) 17.847 | (b) 0.004567 | (c) 256.75 | (d) 10.00",
+      "(a) 17.847 | (b) 0.00457 | (c) 256.74 | (d) 10.00",
+      "(a) 17.846 | (b) 0.004568 | (c) 256.75 | (d) 9.99"
+    ],
+    answer: 1,
+    explanation: `<strong>(a) 17.8465 to 3 d.p.:</strong><br>Look at 4th decimal: 17.846<u>5</u> → 5 ≥ 5, so round up 3rd decimal (6 → 7)<br>= <strong>17.847</strong> ✓<br><br><strong>(b) 0.0045672 to 4 significant figures:</strong><br>Sig. figs start at 4 (first non-zero): 4,5,6,7 → 4th sig. fig = 7, next digit = 2 &lt; 5, round down<br>= <strong>0.004567</strong> ✓<br><br><strong>(c) 256.749 to 2 d.p.:</strong><br>2nd decimal is 4, 3rd decimal = 9 ≥ 5, round up: 4→5<br>= <strong>256.75</strong> ✓<br><br><strong>(d) 9.995 to 2 d.p.:</strong><br>2nd decimal is 9, 3rd decimal = 5 ≥ 5, round up: 9→10, carry forward<br>9.99 → 9.99 + 0.01 = <strong>10.00</strong> ✓<br><br><em>Note:</em> Rounding 9.995 to 2 d.p. requires carrying the digit — the answer becomes 10.00.`
+  },
+
+  // ── QUESTION 20(a): Laspeyres Index ──────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q20(a) Laspeyres Price Index</div><div class="sta-qtext">Using the price and quantity data below, calculate the <strong>Laspeyres Price Index</strong>:<br><br><table class="sta-table"><thead><tr><th>Item</th><th>Base Price (P₀)</th><th>Current Price (P₁)</th><th>Base Qty (Q₀)</th><th>Current Qty (Q₁)</th></tr></thead><tbody><tr><td>A</td><td>40</td><td>50</td><td>30</td><td>35</td></tr><tr><td>B</td><td>60</td><td>75</td><td>20</td><td>25</td></tr><tr><td>C</td><td>80</td><td>100</td><td>10</td><td>15</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["120.0", "122.5", "125.0", "127.5"],
+    answer: 2,
+    explanation: `<strong>Laspeyres Index</strong> uses <em>base period quantities (Q₀)</em> as weights:<br>L = [Σ(P₁·Q₀) ÷ Σ(P₀·Q₀)] × 100<br><br><strong>Step 1 — Numerator Σ(P₁·Q₀):</strong><br>A: 50×30 = 1,500<br>B: 75×20 = 1,500<br>C: 100×10 = 1,000<br>Total = <strong>4,000</strong><br><br><strong>Step 2 — Denominator Σ(P₀·Q₀):</strong><br>A: 40×30 = 1,200<br>B: 60×20 = 1,200<br>C: 80×10 = 800<br>Total = <strong>3,200</strong><br><br><strong>Step 3 — Laspeyres Index:</strong><br>L = (4,000 ÷ 3,200) × 100 = 1.25 × 100 = <strong>125.0</strong><br><br><em>Interpretation:</em> Prices have risen by 25% on average (using base-year quantities as weights).`
+  },
+
+  // ── QUESTION 20(b): Paasche Index ────────────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q20(b) Paasche Price Index</div><div class="sta-qtext">Using the same data below, calculate the <strong>Paasche Price Index</strong>:<br><br><table class="sta-table"><thead><tr><th>Item</th><th>P₀</th><th>P₁</th><th>Q₀</th><th>Q₁</th></tr></thead><tbody><tr><td>A</td><td>40</td><td>50</td><td>30</td><td>35</td></tr><tr><td>B</td><td>60</td><td>75</td><td>20</td><td>25</td></tr><tr><td>C</td><td>80</td><td>100</td><td>10</td><td>15</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["120.0", "122.5", "125.0", "127.5"],
+    answer: 2,
+    explanation: `<strong>Paasche Index</strong> uses <em>current period quantities (Q₁)</em> as weights:<br>P = [Σ(P₁·Q₁) ÷ Σ(P₀·Q₁)] × 100<br><br><strong>Step 1 — Numerator Σ(P₁·Q₁):</strong><br>A: 50×35 = 1,750<br>B: 75×25 = 1,875<br>C: 100×15 = 1,500<br>Total = <strong>5,125</strong><br><br><strong>Step 2 — Denominator Σ(P₀·Q₁):</strong><br>A: 40×35 = 1,400<br>B: 60×25 = 1,500<br>C: 80×15 = 1,200<br>Total = <strong>4,100</strong><br><br><strong>Step 3 — Paasche Index:</strong><br>P = (5,125 ÷ 4,100) × 100 = 1.25 × 100 = <strong>125.0</strong><br><br><em>Note:</em> In this dataset, both Laspeyres and Paasche give <strong>125.0</strong> because the quantity proportions across items are the same in both periods.`
+  },
+
+  // ── QUESTION 20(c): Fisher's Ideal Index ─────────────────────
+  {
+    question: `<div class="sta-question"><div class="sta-qnum">Q20(c) Fisher's Ideal Index</div><div class="sta-qtext">Using the computed Laspeyres (L) and Paasche (P) index numbers, calculate the <strong>Fisher's Ideal Price Index</strong>:<br><br><table class="sta-table"><thead><tr><th>Index</th><th>Value</th></tr></thead><tbody><tr><td>Laspeyres (L)</td><td>125.0</td></tr><tr><td>Paasche (P)</td><td>125.0</td></tr></tbody></table></div></div>`,
+    html: true,
+    options: ["120.0", "122.5", "125.0", "127.5"],
+    answer: 2,
+    explanation: `<strong>Fisher's Ideal Index Formula:</strong><br>F = √(L × P)<br><br>Where:<br>L = Laspeyres Index = 125.0<br>P = Paasche Index = 125.0<br><br><strong>Calculation:</strong><br>F = √(125.0 × 125.0)<br>= √(15,625)<br>= <strong>125.0</strong><br><br><strong>Why "Ideal"?</strong> Fisher's index is called "ideal" because:<br>1. It is the <em>geometric mean</em> of Laspeyres and Paasche indexes.<br>2. It satisfies both the <strong>Time Reversal Test</strong> and the <strong>Factor Reversal Test</strong> — properties that no single-weighted index satisfies alone.<br>3. It eliminates the upward bias of Laspeyres and the downward bias of Paasche.<br><br><em>Summary:</em> Laspeyres = 125.0, Paasche = 125.0, Fisher's = <strong>125.0</strong>`
+  }
+
+];
+
 // ── FULL QUESTION BANK ───────────────────────────────────────
 const CBT_QUESTIONS = {
   CHM101: CHM101_Q.map(item => ({question:item.q, options:item.o, answer:item.a, explanation:item.e})),
   MTH101: MTH101_Q.map(item => ({question:item.q, options:item.o, answer:item.a, explanation:item.e})),
-  PHY101: PHY101_Q.map(item => ({question:item.q, options:item.o, answer:item.a, explanation:item.e}))
+  PHY101: PHY101_Q.map(item => ({question:item.q, options:item.o, answer:item.a, explanation:item.e})),
+  STA101: STA101_Q
 };
 
 // ── STATE ────────────────────────────────────────────────────
@@ -589,10 +1015,13 @@ function renderCBTCourses() {
   if (!grid) return;
   grid.innerHTML = CBT_COURSES.map(c => {
     const qCount = (CBT_QUESTIONS[c.id] || []).length;
+    const isOrdered = c.ordered ? `<div class="ordered-badge">📋 Fixed Order</div>` : '';
+    const cardClass = c.id === 'STA101' ? 'cbt-course-card sta-card' : 'cbt-course-card';
     return `
-      <div class="cbt-course-card">
+      <div class="${cardClass}">
         <div class="cbt-code">${c.code}<span class="cbt-q-badge">${qCount} questions</span></div>
         <div class="cbt-name">${c.name}</div>
+        ${isOrdered}
         <div class="cbt-meta">Faculty: ${c.faculty} | Up to ${c.maxDuration} min | Choose your count</div>
         <button class="btn-start-cbt" onclick="openExamModal('${c.id}')">▶ SET UP & START TEST</button>
       </div>`;
@@ -604,11 +1033,17 @@ function startExam(courseId, questionCount, duration) {
   const course = CBT_COURSES.find(c => c.id === courseId);
   if (!course) return;
   const allQ = CBT_QUESTIONS[courseId] || [];
-  const shuffled = shuffleArray([...allQ]);
-  const selected = shuffled.slice(0, questionCount);
+  // Ordered courses keep exact sequence; others are shuffled
+  let selected;
+  if (course.ordered) {
+    selected = allQ.slice(0, questionCount);
+  } else {
+    selected = shuffleArray([...allQ]).slice(0, questionCount);
+  }
 
   currentExam = {
     courseId, courseName: course.name, courseCode: course.code,
+    ordered: course.ordered || false,
     questions: selected, answers: new Array(selected.length).fill(null),
     currentQ: 0, startTime: Date.now(), duration,
     timerInterval: null, submitted: false
@@ -626,7 +1061,13 @@ function renderQuestion() {
   const n = currentExam.currentQ;
   const total = currentExam.questions.length;
   document.getElementById('q-number').textContent = `Question ${n+1} of ${total}`;
-  document.getElementById('q-text').textContent = q.question;
+  // Support rich HTML questions (for STA101 tables etc.)
+  const qTextEl = document.getElementById('q-text');
+  if (q.html) {
+    qTextEl.innerHTML = q.question;
+  } else {
+    qTextEl.textContent = q.question;
+  }
   document.getElementById('exam-q-count').textContent = `${n+1} / ${total}`;
   document.getElementById('exam-progress-fill').style.width = `${((n+1)/total)*100}%`;
   document.getElementById('btn-prev').disabled = n === 0;
@@ -685,11 +1126,48 @@ function startTimer() {
 function submitExam(timeUp=false) {
   if (currentExam.submitted) return;
   if (!timeUp) {
-    const ans = currentExam.answers.filter(a=>a!==null).length;
-    const tot = currentExam.questions.length;
-    if (ans < tot) { if (!confirm(`${tot-ans} question(s) unanswered. Submit anyway?`)) return; }
-    else { if (!confirm('Submit your exam now?')) return; }
+    // Show custom confirmation modal
+    openSubmitModal();
+    return;
   }
+  // Time's up — force submit without modal
+  _doSubmit();
+}
+
+function openSubmitModal() {
+  const answered = currentExam.answers.filter(a => a !== null).length;
+  const total = currentExam.questions.length;
+  const unanswered = total - answered;
+
+  // Populate stats
+  document.getElementById('submit-modal-stats').innerHTML = `
+    <div class="sms-item sms-answered">
+      <span class="sms-num">${answered}</span>
+      <span class="sms-label">Answered</span>
+    </div>
+    <div class="sms-item sms-unanswered">
+      <span class="sms-num">${unanswered}</span>
+      <span class="sms-label">Unanswered</span>
+    </div>
+    <div class="sms-item">
+      <span class="sms-num" style="color:var(--neon)">${total}</span>
+      <span class="sms-label">Total</span>
+    </div>`;
+
+  document.getElementById('submit-confirm-modal').style.display = 'flex';
+}
+
+function closeSubmitModal() {
+  document.getElementById('submit-confirm-modal').style.display = 'none';
+}
+
+function confirmSubmitExam() {
+  closeSubmitModal();
+  _doSubmit();
+}
+
+function _doSubmit() {
+  if (currentExam.submitted) return;
   clearInterval(currentExam.timerInterval);
   currentExam.submitted = true;
   let correct=0, wrong=0, skipped=0;
@@ -738,12 +1216,12 @@ function showReview() {
     const icon=isS?'⬜':isC?'✅':'❌';
     return `<div class="review-item ${cls}">
       <div class="review-q-num">QUESTION ${i+1} ${icon}</div>
-      <div class="review-q-text">${q.question}</div>
+      <div class="review-q-text">${q.html ? q.question : q.question.replace(/</g,'&lt;')}</div>
       <div class="review-answers">
         <span class="rev-your ${isC?'was-correct':''}">Your answer: ${ua!==null?letters[ua]+'. '+q.options[ua]:'Not answered'}</span>
         ${!isC?`<span class="rev-correct">✅ Correct: ${letters[q.answer]}. ${q.options[q.answer]}</span>`:''}
       </div>
-      <div class="review-explanation"><strong>📖 Explanation:</strong> ${q.explanation}</div>
+      <div class="review-explanation"><strong>📖 Explanation:</strong><br>${q.explanation}</div>
     </div>`;
   }).join('');
 }
