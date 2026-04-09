@@ -1,12 +1,20 @@
 /**
  * ============================================================
+ * questions.js — All CBT Question Banks & Course Data
+ * Edit here to add new courses or update questions
+ * ============================================================
+ */
+
+"use strict";
+
+// ================================================================
+/**
+ * ============================================================
  * questions.js — CBT Question Bank & Course Data
  * Contains: FACULTIES, CBT_COURSES, all question arrays
  * Edit this file to add/update courses and questions
  * ============================================================
  */
-"use strict";
-
 // ── FACULTIES DATA ──────────────────────────────────────────
 // These are display-only for navigation. Actual files come from Firebase.
 const FACULTIES = [
@@ -859,3 +867,6 @@ const CBT_QUESTIONS = {
 };
 
 // END OF QUESTIONS DATA
+
+
+// ================================================================

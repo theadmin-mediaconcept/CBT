@@ -1,93 +1,82 @@
 /**
  * ============================================================
- * router.js — Single-Page App Navigation
- * Controls which page/section is shown at any time
+ * router.js — SPA Navigation & Page Management
  * ============================================================
  */
 
 "use strict";
 
-// All page IDs in the SPA
-const PAGES = ["page-login", "page-home", "page-materials",
-               "page-cbt-select", "page-cbt-exam", "page-results",
-               "page-dashboard", "page-admin", "page-faculty-detail",
-               "page-admin-login"];
+const PAGES = [
+  "page-login", "page-register", "page-home", "page-materials",
+  "page-faculty-detail", "page-cbt-select", "page-cbt-exam",
+  "page-results", "page-dashboard", "page-admin", "page-admin-login"
+];
 
-// Page aliases → actual page IDs
 const PAGE_MAP = {
   "login":          "page-login",
+  "register":       "page-register",
   "home":           "page-home",
   "materials":      "page-materials",
+  "faculty-detail": "page-faculty-detail",
   "cbt":            "page-cbt-select",
   "cbt-exam":       "page-cbt-exam",
   "results":        "page-results",
   "dashboard":      "page-dashboard",
   "admin":          "page-admin",
-  "faculty-detail": "page-faculty-detail",
   "admin-login":    "page-admin-login"
 };
 
-// Track current page
-let currentPage = "login";
+let currentPage = "";
 
-// ─── NAVIGATE TO PAGE ─────────────────────────────────────────
+// ── NAVIGATE ──────────────────────────────────────────────────
 function navigateTo(pageName) {
-  const pageId = PAGE_MAP[pageName] || pageName;
+  // Protected pages require login
+  const protected_ = ["home","materials","faculty-detail","cbt","cbt-exam","results","dashboard"];
+  const adminOnly  = ["admin"];
 
-  // Auth guard — protect pages that need login
-  const protectedPages = ["home","materials","cbt","cbt-exam","results","dashboard","faculty-detail"];
-  const adminPages     = ["admin"];
-
-  if (protectedPages.includes(pageName) && !auth.currentUser) {
+  if (protected_.includes(pageName) && !isLoggedIn()) {
     showToast("Please sign in to continue.", "info");
     pageName = "login";
-    return;
   }
-  if (adminPages.includes(pageName) && !isAdmin()) {
+  if (adminOnly.includes(pageName) && !isAdmin()) {
     navigateTo("admin-login");
     return;
   }
 
+  const pageId = PAGE_MAP[pageName] || pageName;
+
   // Hide all pages
-  PAGES.forEach(p => {
-    const el = document.getElementById(p);
+  PAGES.forEach(id => {
+    const el = document.getElementById(id);
     if (el) el.classList.remove("active");
   });
 
-  // Show target page
-  const target = document.getElementById(PAGE_MAP[pageName] || pageId);
-  if (target) {
-    target.classList.add("active");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    currentPage = pageName;
+  // Show target
+  const target = document.getElementById(pageId);
+  if (!target) { console.warn("Page not found:", pageId); return; }
 
-    // Trigger page-specific init
-    onPageEnter(pageName);
+  target.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  currentPage = pageName;
+
+  // Run page-specific init
+  onPageEnter(pageName);
+
+  // Show/hide header
+  const header = document.getElementById("site-header");
+  if (header) {
+    const noHeader = ["login", "register", "admin-login", "cbt-exam"];
+    header.style.display = noHeader.includes(pageName) ? "none" : "";
   }
 }
 
-// ─── PAGE ENTER HOOKS ─────────────────────────────────────────
-function onPageEnter(pageName) {
-  switch (pageName) {
-    case "home":
-      initHomePage();
-      break;
-    case "materials":
-      renderFacultyGrid();
-      break;
-    case "cbt":
-      renderCBTCourses();
-      break;
-    case "dashboard":
-      initDashboard();
-      break;
-    case "admin":
-      initAdminPanel();
-      break;
+// ── PAGE ENTER HOOKS ──────────────────────────────────────────
+function onPageEnter(name) {
+  switch (name) {
+    case "home":           initHomePage();      break;
+    case "materials":      renderFacultyGrid(); break;
+    case "cbt":            renderCBTCourses();  break;
+    case "dashboard":      initDashboard();     break;
+    case "admin":          initAdminPanel();    break;
   }
-}
-
-// ─── UTILITY: Back navigation ─────────────────────────────────
-function goBack(page) {
-  navigateTo(page || "home");
 }

@@ -1,163 +1,262 @@
 /**
  * ============================================================
  * auth.js — Authentication Module
- * Handles: Google login, admin login, logout, session state
+ * Supports: Email/Password signup+login, Google sign-in,
+ *           Admin login, Persistent session via localStorage
  * ============================================================
  */
 
 "use strict";
 
-// ─── AUTH STATE LISTENER ─────────────────────────────────────
-// Called whenever login/logout happens anywhere in the app
+// ── PERSISTENT SESSION HELPERS ────────────────────────────────
+
+/**
+ * Save user session to localStorage for persistence.
+ * This means the user stays logged in across browser sessions.
+ */
+function saveSession(user, loginMethod) {
+  const session = {
+    uid:         user.uid,
+    name:        user.displayName || user.email.split("@")[0],
+    email:       user.email,
+    photo:       user.photoURL || "",
+    loginMethod: loginMethod || "email",
+    savedAt:     Date.now()
+  };
+  localStorage.setItem(LS.SESSION, JSON.stringify(session));
+}
+
+/**
+ * Get the saved session from localStorage.
+ * Returns null if no session exists.
+ */
+function getSession() {
+  try {
+    const raw = localStorage.getItem(LS.SESSION);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+/** Remove the persisted session (on logout or data clear) */
+function clearSession() {
+  localStorage.removeItem(LS.SESSION);
+  localStorage.removeItem(LS.ADMIN);
+  sessionStorage.removeItem("isAdmin");
+}
+
+// ── FIREBASE AUTH STATE LISTENER ─────────────────────────────
+// This fires on every page load. If Firebase already has a user
+// (token still valid), it fires with that user immediately.
 auth.onAuthStateChanged(async (user) => {
+  hideLoadingSpinner();
   if (user) {
-    // User is signed in — save/update their profile in Firestore
+    // Firebase has a valid session — persist it and show app
+    saveSession(user, user.providerData[0]?.providerId === "google.com" ? "google" : "email");
     await saveUserToFirestore(user);
-    // Update all UI elements that show user info
     updateUserUI(user);
-    // Show authenticated pages, hide login
-    handleAuthenticatedState(user);
+    handleAuthenticatedState();
   } else {
-    // No user — show login page
-    handleUnauthenticatedState();
+    // Firebase has no active session —
+    // BUT we still check localStorage for a previously saved session.
+    // Firebase will re-authenticate on next API call automatically
+    // as long as the refresh token is valid.
+    const session = getSession();
+    if (session) {
+      // Session exists in localStorage — user previously logged in.
+      // Update UI with cached data while Firebase re-validates.
+      updateUserUIFromSession(session);
+      handleAuthenticatedState();
+    } else {
+      handleUnauthenticatedState();
+    }
   }
 });
 
-// ─── GOOGLE SIGN IN ──────────────────────────────────────────
-async function signInWithGoogle() {
+// ── EMAIL / PASSWORD SIGN UP ──────────────────────────────────
+async function signUpWithEmail(name, email, password) {
   try {
-    showLoadingSpinner("Signing in with Google...");
-    const result = await auth.signInWithPopup(googleProvider);
+    showLoadingSpinner("Creating your account...");
+    // Create the Firebase auth user
+    const result = await auth.createUserWithEmailAndPassword(email, password);
     const user   = result.user;
-    showToast("Welcome, " + user.displayName + "! 🎉", "success");
-    // Redirect to home after short delay
-    setTimeout(() => navigateTo("home"), 1000);
+    // Set display name
+    await user.updateProfile({ displayName: name });
+    saveSession(user, "email");
+    await saveUserToFirestore(user);
+    showToast("Account created! Welcome, " + name + " 🎉", "success");
+    hideLoadingSpinner();
+    setTimeout(() => navigateTo("home"), 800);
   } catch (error) {
     hideLoadingSpinner();
-    console.error("Google sign-in error:", error);
-    if (error.code === "auth/popup-closed-by-user") {
-      showToast("Sign-in cancelled.", "info");
-    } else {
-      showToast("Sign-in failed: " + error.message, "error");
+    const msg = getFriendlyAuthError(error.code);
+    showToast(msg, "error");
+  }
+}
+
+// ── EMAIL / PASSWORD SIGN IN ──────────────────────────────────
+async function signInWithEmail(email, password) {
+  try {
+    showLoadingSpinner("Signing in...");
+    const result = await auth.signInWithEmailAndPassword(email, password);
+    const user   = result.user;
+    saveSession(user, "email");
+    showToast("Welcome back, " + (user.displayName || email.split("@")[0]) + "! 👋", "success");
+    hideLoadingSpinner();
+    setTimeout(() => navigateTo("home"), 800);
+  } catch (error) {
+    hideLoadingSpinner();
+    showToast(getFriendlyAuthError(error.code), "error");
+  }
+}
+
+// ── GOOGLE SIGN IN ────────────────────────────────────────────
+async function signInWithGoogle() {
+  try {
+    showLoadingSpinner("Opening Google sign-in...");
+    const result = await auth.signInWithPopup(googleProvider);
+    const user   = result.user;
+    saveSession(user, "google");
+    await saveUserToFirestore(user);
+    showToast("Welcome, " + user.displayName + "! 🎉", "success");
+    hideLoadingSpinner();
+    setTimeout(() => navigateTo("home"), 800);
+  } catch (error) {
+    hideLoadingSpinner();
+    if (error.code !== "auth/popup-closed-by-user") {
+      showToast(getFriendlyAuthError(error.code), "error");
     }
   }
 }
 
-// ─── ADMIN LOGIN ─────────────────────────────────────────────
+// ── ADMIN LOGIN ───────────────────────────────────────────────
 async function adminLogin(username, password) {
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    // Store admin session flag (in addition to normal auth)
+    localStorage.setItem(LS.ADMIN, "true");
     sessionStorage.setItem("isAdmin", "true");
     showToast("Admin access granted! 🔐", "success");
     setTimeout(() => navigateTo("admin"), 800);
     return true;
-  } else {
-    showToast("Invalid admin credentials.", "error");
-    return false;
   }
+  showToast("Invalid admin credentials.", "error");
+  return false;
 }
 
-// ─── SIGN OUT ────────────────────────────────────────────────
+// ── SIGN OUT ──────────────────────────────────────────────────
 async function signOut() {
   try {
-    sessionStorage.removeItem("isAdmin");
+    clearSession();
     await auth.signOut();
     showToast("Signed out successfully.", "info");
     navigateTo("login");
   } catch (error) {
-    showToast("Sign-out error: " + error.message, "error");
+    // Even if Firebase signOut fails, clear local state
+    clearSession();
+    navigateTo("login");
   }
 }
 
-// ─── SAVE / UPDATE USER IN FIRESTORE ─────────────────────────
-async function saveUserToFirestore(user) {
+// ── PASSWORD RESET ────────────────────────────────────────────
+async function sendPasswordReset(email) {
   try {
-    const userRef = db.collection(COLLECTIONS.USERS).doc(user.uid);
-    const doc     = await userRef.get();
+    await auth.sendPasswordResetEmail(email);
+    showToast("Password reset email sent! Check your inbox.", "success");
+  } catch (error) {
+    showToast(getFriendlyAuthError(error.code), "error");
+  }
+}
 
-    const userData = {
-      name:         user.displayName || "Student",
+// ── SAVE USER TO FIRESTORE ────────────────────────────────────
+async function saveUserToFirestore(user) {
+  if (!user) return;
+  try {
+    const ref = db.collection(COLLECTIONS.USERS).doc(user.uid);
+    const doc = await ref.get();
+    const data = {
+      name:         user.displayName || user.email.split("@")[0],
       email:        user.email,
       profileImage: user.photoURL || "",
       lastLogin:    firebase.firestore.FieldValue.serverTimestamp()
     };
-
     if (!doc.exists) {
-      // First time — set full profile + createdAt
-      await userRef.set({
-        ...userData,
-        userId:    user.uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      await ref.set({
+        ...data,
+        userId:      user.uid,
+        loginMethod: user.providerData[0]?.providerId === "google.com" ? "google" : "email",
+        createdAt:   firebase.firestore.FieldValue.serverTimestamp()
       });
     } else {
-      // Returning user — just update lastLogin & photo
-      await userRef.update(userData);
+      await ref.update(data);
     }
-  } catch (error) {
-    console.error("Error saving user:", error);
+  } catch (err) {
+    console.error("Firestore user save error:", err);
   }
 }
 
-// ─── GET CURRENT USER ────────────────────────────────────────
-function getCurrentUser() {
-  return auth.currentUser;
-}
+// ── GETTERS ───────────────────────────────────────────────────
+function getCurrentUser()  { return auth.currentUser; }
+function isAdmin()         { return localStorage.getItem(LS.ADMIN) === "true" || sessionStorage.getItem("isAdmin") === "true"; }
+function isLoggedIn()      { return !!(auth.currentUser || getSession()); }
 
-// ─── CHECK IF ADMIN ──────────────────────────────────────────
-function isAdmin() {
-  return sessionStorage.getItem("isAdmin") === "true";
-}
-
-// ─── REQUIRE AUTH GUARD ──────────────────────────────────────
-// Call this at the top of protected pages
-function requireAuth() {
-  if (!auth.currentUser) {
-    navigateTo("login");
-    return false;
-  }
-  return true;
-}
-
-// ─── REQUIRE ADMIN GUARD ─────────────────────────────────────
-function requireAdmin() {
-  if (!isAdmin()) {
-    showToast("Admin access required.", "error");
-    navigateTo("home");
-    return false;
-  }
-  return true;
-}
-
-// ─── UI STATE HANDLERS ───────────────────────────────────────
+// ── UI UPDATERS ───────────────────────────────────────────────
 function updateUserUI(user) {
-  // Update avatar everywhere on the page
-  document.querySelectorAll(".user-avatar-img").forEach(img => {
-    img.src = user.photoURL || "Admin.png";
-    img.alt = user.displayName;
-  });
-  document.querySelectorAll(".user-name-display").forEach(el => {
-    el.textContent = user.displayName || "Student";
-  });
-  document.querySelectorAll(".user-email-display").forEach(el => {
-    el.textContent = user.email;
-  });
+  const name  = user.displayName || user.email.split("@")[0];
+  const email = user.email;
+  const photo = user.photoURL || "assets/Admin.png";
+  _applyUserUI(name, email, photo);
 }
 
-function handleAuthenticatedState(user) {
-  // Hide login-only elements, show auth-only elements
-  document.querySelectorAll(".hide-when-auth").forEach(el => {
-    el.style.display = "none";
-  });
-  document.querySelectorAll(".show-when-auth").forEach(el => {
-    el.style.display = "";
-  });
+function updateUserUIFromSession(session) {
+  const name  = session.name  || "Student";
+  const email = session.email || "";
+  const photo = session.photo || "assets/Admin.png";
+  _applyUserUI(name, email, photo);
+}
+
+function _applyUserUI(name, email, photo) {
+  document.querySelectorAll(".user-avatar-img").forEach(img  => { img.src = photo; img.alt = name; });
+  document.querySelectorAll(".user-name-display").forEach(el => { el.textContent = name; });
+  document.querySelectorAll(".user-email-display").forEach(el => { el.textContent = email; });
+}
+
+function handleAuthenticatedState() {
+  document.querySelectorAll(".hide-when-auth").forEach(el => { el.style.display = "none"; });
+  document.querySelectorAll(".show-when-auth").forEach(el  => { el.style.display = ""; });
+
+  // If currently on login page, redirect to home
+  const session = getSession();
+  if (currentPage === "login" || !currentPage) {
+    navigateTo("home");
+  }
 }
 
 function handleUnauthenticatedState() {
-  document.querySelectorAll(".show-when-auth").forEach(el => {
-    el.style.display = "none";
-  });
-  document.querySelectorAll(".hide-when-auth").forEach(el => {
-    el.style.display = "";
-  });
+  document.querySelectorAll(".show-when-auth").forEach(el  => { el.style.display = "none"; });
+  document.querySelectorAll(".hide-when-auth").forEach(el  => { el.style.display = ""; });
 }
+
+// ── FRIENDLY ERROR MESSAGES ───────────────────────────────────
+function getFriendlyAuthError(code) {
+  const errors = {
+    "auth/user-not-found":          "No account found with this email. Please sign up first.",
+    "auth/wrong-password":          "Incorrect password. Please try again.",
+    "auth/email-already-in-use":    "An account with this email already exists. Please log in.",
+    "auth/weak-password":           "Password must be at least 6 characters.",
+    "auth/invalid-email":           "Please enter a valid email address.",
+    "auth/too-many-requests":       "Too many failed attempts. Please try again later.",
+    "auth/network-request-failed":  "Network error. Please check your connection.",
+    "auth/popup-blocked":           "Popup was blocked. Please allow popups for this site.",
+    "auth/invalid-credential":      "Incorrect email or password. Please try again."
+  };
+  return errors[code] || "Authentication error. Please try again.";
+}
+
+// ── INIT: CHECK SESSION ON PAGE LOAD ─────────────────────────
+// Run immediately to avoid flash of login page for returning users
+(function checkExistingSession() {
+  const session = getSession();
+  if (session) {
+    // Update UI immediately with cached data
+    updateUserUIFromSession(session);
+    // Don't navigate yet — wait for onAuthStateChanged to confirm
+  }
+})();
